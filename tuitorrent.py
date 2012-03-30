@@ -66,6 +66,20 @@ class TuitBot:
             urlres = url
         return urlres
 
+    def download(self, url):
+        """Copy the contents of a file from a given URL
+        to a local file.
+        """
+        try:
+            webFile = urllib.urlopen(url)
+            localFile = open(url.split('/')url[-1], 'w')
+            localFile.write(webFile.read())
+        except IOError as io:
+            print "Archivo no disponible para descarga: %s" % io.message
+        finally:
+            webFile.close()
+            localFile.close()
+
     def run(self):
         '''Ejecucion permamente'''
         while 1:

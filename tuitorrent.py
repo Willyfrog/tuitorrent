@@ -1,6 +1,5 @@
 import twitter
-from datetime import datetime
-from time import sleep
+from time import sleep, time
 from config import *
 import urllib
 import re
@@ -22,7 +21,7 @@ class TuitBot:
             consumer_secret=self.cons_secret,
             access_token_key=self.token_key,
             access_token_secret=self.token_secret)
-        self.running_since = datetime.now()
+        self.running_since = time()
         self.last_id = None
         self.saludar()
 
@@ -40,6 +39,7 @@ class TuitBot:
 
     def menciones(self):
         '''analiza las menciones al usuario'''
+        print "leyendo menciones"
         try:
             mentions = self.api.GetMentions(since_id=self.last_id)
         except TwitterError as te:

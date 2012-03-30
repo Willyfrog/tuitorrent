@@ -44,7 +44,7 @@ class TuitBot:
             mentions = self.api.GetMentions(since_id=self.last_id)
         except TwitterError as te:
             print "Error al recuperar el timeline: %s" % te.message
-        if mentions:
+        if len(mentions):
             for m in mentions:
                 if m.GetCreatedAtInSeconds() >= self.running_since:
                     self.actuar(m)
@@ -52,11 +52,22 @@ class TuitBot:
         else:
             print "sin menciones"
 
-    def saludar(self):
+    def escribir(self, texto, id_user=''):
+        '''
+        escribe su estatus y si se le pasa un id lo hace mencionando al usuario
+        '''
+        l = len(id_user)
+        if len(texto) + l > 139:  # contar ademas un espacio
+            mensaje = id_user + texto[: 139 - l]
+        else:
+            mensaje = id_user + texto
         try:
-            self.api.PostUpdate('Croack! [%s]' % self.running_since)
+            self.api.PostUpdate(mensaje)
         except twitter.TwitterError as te:
-            print "Error al saludar, tenemos permiso? %s" % te.message
+            print "Error al escribir el mensaje (%s): %s" % te.message
+
+    def saludar(self):
+        self.escribir("Croak %s" % self.running_since)
 
     def expandir_url(self, url):
         resp = resp = urllib.urlopen(url)

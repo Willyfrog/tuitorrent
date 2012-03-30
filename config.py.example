@@ -1,4 +1,7 @@
+# TODO: convertir a un sistema de configuracion adecuado que no permita
+#       inyeccion de codigo
 USER = ''
+REFRESH = ''
 CONSUMER_KEY = ''
 CONSUMER_SECRET = ''
 ACCESS_TOKEN = ''

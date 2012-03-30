@@ -34,7 +34,7 @@ class TuitBot:
     def actuar(self, estado):
         '''actua en base a la accion solicitada'''
         #TODO: meter plugins de acciones diferentes
-        urls = saca_urls(estado.text)
+        urls = self.saca_urls(estado.text)
         print "%s: %s" % (estado.user.name, ','.join(urls))
 
     def menciones(self):
@@ -44,10 +44,13 @@ class TuitBot:
             mentions = self.api.GetMentions(since_id=self.last_id)
         except TwitterError as te:
             print "Error al recuperar el timeline: %s" % te.message
-        for m in mentions:
-            if m.GetCreatedAt() >= self.running_since:
-                self.actuar(m)
-        self.last_id = mentions[-1].GetId()
+        if mentions:
+            for m in mentions:
+                if m.GetCreatedAtInSeconds() >= self.running_since:
+                    self.actuar(m)
+            self.last_id = mentions[0].GetId()
+        else:
+            print "sin menciones"
 
     def saludar(self):
         try:
@@ -66,8 +69,8 @@ class TuitBot:
     def run(self):
         '''Ejecucion permamente'''
         while 1:
-            sleep(300)  # TODO: extraer parametro a config
             self.menciones()
+            sleep(REFRESH)  # TODO: extraer parametro a config
 
 if __name__ == '__main__':
     t = TuitBot(CONSUMER_KEY, CONSUMER_SECRET, ACCESS_TOKEN, ACCESS_SECRET)

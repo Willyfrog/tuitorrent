@@ -70,15 +70,12 @@ class TuitBot:
         """Copy the contents of a file from a given URL
         to a local file.
         """
-        try:
-            webFile = urllib.urlopen(url)
-            localFile = open(url.split('/')url[-1], 'w')
-            localFile.write(webFile.read())
-        except IOError as io:
-            print "Archivo no disponible para descarga: %s" % io.message
-        finally:
-            webFile.close()
-            localFile.close()
+        nombre = url.split('/')[-1]
+        if nombre.endswith('.torrent'):  # mini medida de seguridad
+            try:
+                urllib.request.urlretrieve(file_url, nombre)
+            except ContentTooShortError as err:
+                print "Archivo corrupto?: %s" % err.message
 
     def run(self):
         '''Ejecucion permamente'''

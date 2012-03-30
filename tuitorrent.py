@@ -1,11 +1,19 @@
 import twitter
 from datetime import datetime
+from time import sleep
 from config import *
 import urllib
+import re
+
+URL_PATTERN = "((https?:\/\/)?[\w-]+(\.[\w-]+)+\.?(\/\S*)?)"
 
 
 class TuitBot:
     def __init__(self, cons_key, cons_secret, token_key, token_secret):
+        '''
+        inicializacion, requiere los parametros proporcionados por
+        dev.twitter.com
+        '''
         self.cons_key = cons_key
         self.cons_secret = cons_secret
         self.token_key = token_key
@@ -14,17 +22,36 @@ class TuitBot:
             consumer_secret=self.cons_secret,
             access_token_key=self.token_key,
             access_token_secret=self.token_secret)
-        self.last_run = datetime.now()
+        self.running_since = datetime.now()
+        self.last_id = None
+        self.saludar()
 
-    def actualizar(self):
-        statuses = self.api.GetFriendsTimeline()
-        for s in statuses:
-            if 'http' in s.text:
-                print "%s: %s" % (s.user.name, s.text)
+    def saca_urls(self, texto):
+        '''dado un string saca las urls que haya'''
+        patron = re.compile(URL_PATTERN)
+        urls = patron.findall(texto)
+        return [u[0] for u in urls]
+
+    def actuar(self, estado):
+        '''actua en base a la accion solicitada'''
+        #TODO: meter plugins de acciones diferentes
+        urls = saca_urls(estado.text)
+        print "%s: %s" % (estado.user.name, ','.join(urls))
+
+    def menciones(self):
+        '''analiza las menciones al usuario'''
+        try:
+            mentions = self.api.GetMentions(since_id=self.last_id)
+        except TwitterError as te:
+            print "Error al recuperar el timeline: %s" % te.message
+        for m in mentions:
+            if m.GetCreatedAt() >= self.running_since:
+                self.actuar(m)
+        self.last_id = mentions[-1].GetId()
 
     def saludar(self):
         try:
-            self.api.PostUpdate('Croack!')
+            self.api.PostUpdate('Croack! [%s]' % self.running_since)
         except twitter.TwitterError as te:
             print "Error al saludar, tenemos permiso? %s" % te.message
 
@@ -36,8 +63,17 @@ class TuitBot:
             urlres = url
         return urlres
 
+    def run(self):
+        '''Ejecucion permamente'''
+        while 1:
+            sleep(300)  # TODO: extraer parametro a config
+            self.menciones()
+
 if __name__ == '__main__':
     t = TuitBot(CONSUMER_KEY, CONSUMER_SECRET, ACCESS_TOKEN, ACCESS_SECRET)
-    t.saludar()
-    t.actualizar()
+    t.run()
 
+#TODO: comprobar que hay fichero de configuracion y parametros necesarios
+#TODO: testing
+#TODO: docs
+#TODO: plugins

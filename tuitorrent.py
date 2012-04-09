@@ -71,8 +71,7 @@ class TuitBot:
         try:
             self.api.PostUpdate(mensaje)
         except twitter.TwitterError as te:
-            print "Error al escribir el mensaje (%s): %s" % (mensaje,
-                    te.message)
+            print "Error al escribir el mensaje: %s" % te.message
 
     def saludar(self):
         self.escribir(u"Croak %s" % self.running_since)

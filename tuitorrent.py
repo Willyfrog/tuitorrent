@@ -96,8 +96,11 @@ class TuitBot:
             nombre = unquote(
                     r.info()['Content-Disposition'].split('filename=')[1])
 
+        if nombre[0] == '"' and nombre[-1] == '"':
+            # linux deja las comillas y macos no
+            nombre = nombre[1:-1]
         # TODO: buscar si concuerda con un torrent una vez descargado
-        f = open(os.path.join(PATH, nombre[1:-1]), 'wb')
+        f = open(os.path.join(PATH, nombre), 'wb')
         f.write(r.read())
         f.close()
         mensj = "Descargando %s" % nombre

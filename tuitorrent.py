@@ -3,6 +3,7 @@ from time import sleep, time
 from config import *
 from urllib2 import urlopen, Request, unquote
 import re
+import os.path
 
 URL_PATTERN = "((https?:\/\/)?[\w-]+(\.[\w-]+)+\.?(\/\S*)?)"
 
@@ -94,7 +95,7 @@ class TuitBot:
                     r.info()['Content-Disposition'].split('filename=')[1])
 
         # TODO: buscar si concuerda con un torrent una vez descargado
-        f = open(nombre[1:-1], 'wb')
+        f = open(os.path.join(PATH, nombre[1:-1]), 'wb')
         f.write(r.read())
         f.close()
         mensj = "Descargando %s" % nombre

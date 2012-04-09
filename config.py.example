@@ -1,7 +1,7 @@
 # TODO: convertir a un sistema de configuracion adecuado que no permita
 #       inyeccion de codigo
 USER = ''
-REFRESH = ''
+REFRESH = 300
 PATH = ''
 CONSUMER_KEY = ''
 CONSUMER_SECRET = ''

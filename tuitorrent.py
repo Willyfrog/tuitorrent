@@ -2,6 +2,7 @@ import twitter
 from time import sleep, time
 from config import *
 from urllib2 import urlopen, Request, unquote
+import unicodedata
 import re
 import os.path
 
@@ -35,7 +36,7 @@ class TuitBot:
         '''actua en base a la accion solicitada'''
         #TODO: meter plugins de acciones diferentes
         urls = self.saca_urls(estado.text)
-        print "%s: %s" % (estado.user.name, ','.join(urls))
+        #print "%s: %s" % (estado.user.name, ','.join(urls))
         for u in urls:
             m = self.download(self.expandir_url(u))
             self.escribir(m, estado.user.screen_name)

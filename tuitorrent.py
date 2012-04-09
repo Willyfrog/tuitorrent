@@ -64,13 +64,14 @@ class TuitBot:
         if l:
             user = "@%s" % id_user
         if len(texto) + l > 138:  # contar ademas un espacio y una @
-            mensaje = "%s %s" % (user,  texto[: 138 - l])
+            mensaje = "%s %s" % (user,  texto[:138 - l])
         else:
             mensaje = "%s %s" % (user, texto)
         try:
             self.api.PostUpdate(mensaje)
         except twitter.TwitterError as te:
-            print "Error al escribir el mensaje (%s): %s" % te.message
+            print "Error al escribir el mensaje (%s): %s" % (mensaje,
+                    te.message)
 
     def saludar(self):
         self.escribir("Croak %s" % self.running_since)

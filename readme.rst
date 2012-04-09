@@ -19,3 +19,10 @@ Instalacion
 2. conseguir par de claves OAuth de twitter (y una cuenta twitter)
 3. configurar config.py
 4. ejecutar desde shell install.sh (o hacer los pasos equivalentes a mano)
+
+=========
+Ejecucion
+=========
+Abrir una ventana de shell, posicionarse en el directorio de tuitorrent.
+Activar virtualenv (. env/bin/activate)
+ejecutar python tuitorrent.py

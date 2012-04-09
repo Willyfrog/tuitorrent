@@ -1,7 +1,7 @@
 import twitter
 from time import sleep, time
 from config import *
-import urllib
+from urllib2 import urlopen, Request, unquote
 import re
 
 URL_PATTERN = "((https?:\/\/)?[\w-]+(\.[\w-]+)+\.?(\/\S*)?)"
@@ -23,7 +23,6 @@ class TuitBot:
             access_token_secret=self.token_secret)
         self.running_since = time()
         self.last_id = None
-        self.saludar()
 
     def saca_urls(self, texto):
         '''dado un string saca las urls que haya'''
@@ -36,6 +35,9 @@ class TuitBot:
         #TODO: meter plugins de acciones diferentes
         urls = self.saca_urls(estado.text)
         print "%s: %s" % (estado.user.name, ','.join(urls))
+        for u in urls:
+            m = self.download(self.expandir_url(u))
+            self.escribir(m, estado.user.screen_name)
 
     def menciones(self):
         '''analiza las menciones al usuario'''
@@ -57,10 +59,13 @@ class TuitBot:
         escribe su estatus y si se le pasa un id lo hace mencionando al usuario
         '''
         l = len(id_user)
-        if len(texto) + l > 139:  # contar ademas un espacio
-            mensaje = id_user + texto[: 139 - l]
+        user = ""
+        if l:
+            user = "@%s" % id_user
+        if len(texto) + l > 138:  # contar ademas un espacio y una @
+            mensaje = "%s %s" % (user,  texto[: 138 - l])
         else:
-            mensaje = id_user + texto
+            mensaje = "%s %s" % (user, texto)
         try:
             self.api.PostUpdate(mensaje)
         except twitter.TwitterError as te:
@@ -70,7 +75,7 @@ class TuitBot:
         self.escribir("Croak %s" % self.running_since)
 
     def expandir_url(self, url):
-        resp = resp = urllib.urlopen(url)
+        resp = resp = urlopen(url)
         if resp.getcode() == 200:
             urlres = resp.url
         else:
@@ -81,18 +86,26 @@ class TuitBot:
         """Copy the contents of a file from a given URL
         to a local file.
         """
-        nombre = url.split('/')[-1]
-        if nombre.endswith('.torrent'):  # mini medida de seguridad
-            try:
-                urllib.request.urlretrieve(file_url, nombre)
-            except ContentTooShortError as err:
-                print "Archivo corrupto?: %s" % err.message
+        nombre = unquote(url.split('/')[-1])
+        req = Request(url)
+        r = urlopen(req)
+        if ('Content-Disposition') in r.info():
+            nombre = unquote(
+                    r.info()['Content-Disposition'].split('filename=')[1])
+
+        # TODO: buscar si concuerda con un torrent una vez descargado
+        f = open(nombre[1:-1], 'wb')
+        f.write(r.read())
+        f.close()
+        mensj = "Descargando %s" % nombre
+        return mensj
 
     def run(self):
         '''Ejecucion permamente'''
+        self.saludar()
         while 1:
             self.menciones()
-            sleep(REFRESH)  # TODO: extraer parametro a config
+            sleep(REFRESH)
 
 if __name__ == '__main__':
     t = TuitBot(CONSUMER_KEY, CONSUMER_SECRET, ACCESS_TOKEN, ACCESS_SECRET)

@@ -64,15 +64,18 @@ class TuitBot:
         l = len(id_user)
         user = ""
         if l:
-            user = u"@%s" % id_user
+            user = u"@%s " % id_user
         if len(texto) + l > 138:  # contar ademas un espacio y una @
-            mensaje = u"%s %s" % (user,  texto[:138 - l])
+            mensaje = u"%s%s" % (user,  texto[:138 - l])
         else:
-            mensaje = u"%s %s" % (user, texto)
+            mensaje = u"%s%s" % (user, texto)
         try:
             self.api.PostUpdate(mensaje.encode('utf8'))
         except twitter.TwitterError as te:
             print "Error al escribir el mensaje: %s" % te.message
+        except UnicodeEncodeError as ue:  # workaround encoding issue
+            print "Error de codificacion"
+            self.api.PostUpdate("%ssu archivo se esta descargando" % user)
 
     def saludar(self):
         self.escribir(u"Croak %s" % self.running_since)

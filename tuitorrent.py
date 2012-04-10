@@ -72,7 +72,7 @@ class TuitBot:
         try:
             self.api.PostUpdate(mensaje.encode('utf8'))
         except twitter.TwitterError as te:
-            print "Error al escribir el mensaje: %s" % te.message
+            print "Error al escribir el mensaje: %s" % te.message.encode('utf8')
         except UnicodeEncodeError as ue:  # workaround encoding issue
             print "Error de codificacion"
             self.api.PostUpdate("%ssu archivo se esta descargando" % user)

@@ -22,7 +22,8 @@ class TuitBot:
         self.api = twitter.Api(consumer_key=self.cons_key,
             consumer_secret=self.cons_secret,
             access_token_key=self.token_key,
-            access_token_secret=self.token_secret)
+            access_token_secret=self.token_secret,
+            input_encoding='utf8')
         self.running_since = time()
         self.last_id = None
 
@@ -69,7 +70,7 @@ class TuitBot:
         else:
             mensaje = u"%s %s" % (user, texto)
         try:
-            self.api.PostUpdate(mensaje)
+            self.api.PostUpdate(mensaje.encode('utf8'))
         except twitter.TwitterError as te:
             print "Error al escribir el mensaje: %s" % te.message
 

@@ -47,7 +47,7 @@ class TuitBot:
         print "leyendo menciones"
         try:
             mentions = self.api.GetMentions(since_id=self.last_id)
-        except TwitterError as te:
+        except twitter.TwitterError as te:
             print "Error al recuperar el timeline: %s" % te.message
         if len(mentions):
             for m in mentions:

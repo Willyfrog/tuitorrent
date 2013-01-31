@@ -49,6 +49,7 @@ class TuitBot:
             mentions = self.api.GetMentions(since_id=self.last_id)
         except twitter.TwitterError as te:
             print "Error al recuperar el timeline: %s" % te.message
+            mentions = []
         if len(mentions):
             for m in mentions:
                 if m.GetCreatedAtInSeconds() >= self.running_since:
